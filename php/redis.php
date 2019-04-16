@@ -2,6 +2,8 @@
 /* Functions for redis operations starts here   */
 
 $redisObj = new Redis();
+$hostName = "redis";
+$port = "6379";
 
 function openRedisConnection( $hostName, $port){
     global $redisObj;
@@ -10,87 +12,58 @@ function openRedisConnection( $hostName, $port){
     return $redisObj;
 }
 
-function setValue( $key, $value ){
+function postNote( $key ) {
 
     try{
         global $redisObj;
-        // setting the value in redis
-        $redisObj->setex( $key, $value );
+        $redisObj->set( $key, $_POST["note"]);
+        echo $key;
+        return $key;
+    }catch ( Exception $e ){
+        echo $e->getMessage();
+    }
+}
+
+function getNoteList(){
+    try{
+        global $redisObj;
+        // getting a list of all the keys from redis
+        $keyList = $redisObj->getKeys();
+        echo $keyList;
+        return $keyList;
     }catch( Exception $e ){
         echo $e->getMessage();
     }
 }
 
-function getValueFromKey( $key ){
+getNoteList();
+
+function getNote(){
     try{
         global $redisObj;
-        // getting the value from redis
-        return $redisObj->get( $key);
+        $key = $_GET["id"];
+        // get note from its id
+        $note = $redisObj->get( $key );
+        echo $note;
+        return $note;
     }catch( Exception $e ){
         echo $e->getMessage();
     }
 }
 
-function deleteValueFromKey( $key ){
+// bonus
+function deleteNote(){
     try{
         global $redisObj;
-        // deleting the value from redis
+        $key = $_POST["id"];
+        // deleting note from its id
         $redisObj->del( $key);
+        echo "you have deleted the note: " + $key;
     }catch( Exception $e ){
         echo $e->getMessage();
     }
 }
 
-/* Functions for converting sql result  object to array goes below  */
 
-function convertToArray( $result ){
-    $resultArray = array();
-
-    for( $count=0; $row = $result->fetch_assoc(); $count++ ) {
-        $resultArray[$count] = $row;
-    }
-
-    return $resultArray;
-}
-
-/* Functions for executing the mySql query goes below   */
-
-function executeQuery( $query ){
-    $mysqli = new mysqli( 'localhost',  'username',  'password',  'someDatabase' );
-
-    if( $mysqli->connect_errno ){
-        echo "Failed to connect to MySql:"."(".mysqli_connect_error().")".mysqli_connect_errno();
-    }
-
-    $result =  $mysqli->query( $query );
-    // Calling function to convert result  to array
-    $arrResult = convertToArray( $result );
-
-    return $arrResult;
-}
-
-/*
-$query = 'select * from sometable limit 1';
-// Calling function to execute sql query
-$arrValues = executeQuery( $query );
-
-// Making json string
-$jsonValue = json_encode($arrValues);
-
-// Opening a redis connection
-openRedisConnection( 'localhost', 6379 );
-
-// Inserting the value
-setValue( 'somekey1', $jsonValue);
-
-// Fetching value from redis using the key.
-$val = getValueFromKey( 'somekey1' );
-
-//  Output:  the json encoded array from redis
-echo $val;
-*/
-
-// Unsetting value from redis
-//deleteValueFromKey( $key );
 
 ?>

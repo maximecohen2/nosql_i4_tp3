@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+  web:
+    build:
+      context: docker/web
+      dockerfile: Dockerfile
+    container_name: php_web
+    volumes:
+      - ./php/:/var/www/html/
+    ports:
+      - "80:80"
+    networks:
+      - redis-net
+    depends_on:
+        - redis
+    stdin_open: true
+    tty: true
+
+  redis:
+    image: redis
+    container_name: redis
+    networks:
+      - redis-net
+    expose:
+      - 6379
+
+networks:
+  redis-net:

@@ -10,12 +10,12 @@ function openRedisConnection( $hostName, $port){
     return $redisObj;
 }
 
-function setValueWithTtl( $key, $value, $ttl ){
+function setValue( $key, $value ){
 
     try{
         global $redisObj;
         // setting the value in redis
-        $redisObj->setex( $key, $ttl, $value );
+        $redisObj->setex( $key, $value );
     }catch( Exception $e ){
         echo $e->getMessage();
     }
@@ -69,6 +69,7 @@ function executeQuery( $query ){
     return $arrResult;
 }
 
+/*
 $query = 'select * from sometable limit 1';
 // Calling function to execute sql query
 $arrValues = executeQuery( $query );
@@ -79,16 +80,17 @@ $jsonValue = json_encode($arrValues);
 // Opening a redis connection
 openRedisConnection( 'localhost', 6379 );
 
-// Inserting the value with ttl =  1 hours
-setValueWithTtl( 'somekey1', $jsonValue, 3600);
+// Inserting the value
+setValue( 'somekey1', $jsonValue);
 
 // Fetching value from redis using the key.
 $val = getValueFromKey( 'somekey1' );
 
 //  Output:  the json encoded array from redis
 echo $val;
+*/
 
 // Unsetting value from redis
-deleteValueFromKey( $key );
+//deleteValueFromKey( $key );
 
 ?>

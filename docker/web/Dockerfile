@@ -64,4 +64,6 @@ EXPOSE 80
 
 COPY entrypoint.sh /var/lib
 
+RUN chmod +x /var/lib/entrypoint.sh
+
 ENTRYPOINT ["/var/lib/entrypoint.sh"]

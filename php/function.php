@@ -75,13 +75,13 @@ function deleteNote($redis, $key){
 
 function postNoteJSON($redis, $author, $key, $note) {
     try {
-        //$redis = new redis();
 
         $currDate = date('l jS \of F Y h:i:s A');
         $noteArray = array('author'=>$author, 'created'=> $currDate, 'note'=>$note);
 
         $objJSON = json_encode($noteArray);
-        $redis->rawCommand("JSON");
+        $redis->rawCommand("JSON.SET", $key, '.', $objJSON);
+        return $key;
     }catch(Exception $e){
         echo $e->getMessage();
     }
